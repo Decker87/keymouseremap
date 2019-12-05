@@ -80,3 +80,16 @@ def releaseKey(hexKeyCode):
               ki=KEYBDINPUT(wVk=hexKeyCode,
                             dwFlags=KEYEVENTF_KEYUP))
     user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
+
+# mouse_event: https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260(v=vs.85).aspx
+mouseButtonCodes = {
+    'left':     {'down': 0x02, 'up': 0x04},
+    'right':    {'down': 0x08, 'up': 0x10},
+    'middle':   {'down': 0x20, 'up': 0x40},
+}
+
+def pressMouseButton(button):
+    user32.mouse_event(mouseButtonCodes[button]['down'], 0, 0, 0, 0)
+
+def releaseMouseButton(button):
+    user32.mouse_event(mouseButtonCodes[button]['up'], 0, 0, 0, 0)
