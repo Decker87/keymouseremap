@@ -55,17 +55,17 @@ class Remapper:
         if e.MessageName == 'key up':
             return triggerTypes.KEYUP, e.KeyID
         if e.MessageName == 'mouse left down':
-            return triggerTypes.MOUSEDOWN, "left"
+            return triggerTypes.MOUSEDOWN, codes.MOUSE_LEFT
         if e.MessageName == 'mouse left up':
-            return triggerTypes.MOUSEUP, "left"
-        if e.MessageName == 'mouse middle down':
-            return triggerTypes.MOUSEDOWN, "middle"
-        if e.MessageName == 'mouse middle up':
-            return triggerTypes.MOUSEUP, "middle"
+            return triggerTypes.MOUSEUP, codes.MOUSE_LEFT
         if e.MessageName == 'mouse right down':
-            return triggerTypes.MOUSEDOWN, "right"
+            return triggerTypes.MOUSEDOWN, codes.MOUSE_RIGHT
         if e.MessageName == 'mouse right up':
-            return triggerTypes.MOUSEUP, "right"
+            return triggerTypes.MOUSEUP, codes.MOUSE_RIGHT
+        if e.MessageName == 'mouse middle down':
+            return triggerTypes.MOUSEDOWN, codes.MOUSE_MID
+        if e.MessageName == 'mouse middle up':
+            return triggerTypes.MOUSEUP, codes.MOUSE_MID
 
     def start(self, windowRegexStr):
         keyCodes, mouseButtons = self._getKeyCodesAndMouseButtons()
@@ -85,6 +85,6 @@ if __name__ == "__main__":
     r = Remapper()
     r.registerAction(triggerTypes.KEYDOWN, codes.VK_W, actionTypes.KEYDOWN, codes.VK_Y)
     r.registerAction(triggerTypes.KEYUP, codes.VK_W, actionTypes.KEYUP, codes.VK_Y)
-    r.registerAction(triggerTypes.MOUSEDOWN, "middle", actionTypes.MOUSEDOWN, "right")
-    r.registerAction(triggerTypes.MOUSEUP, "middle", actionTypes.MOUSEUP, "right")
+    r.registerAction(triggerTypes.MOUSEDOWN, codes.MOUSE_MID, actionTypes.MOUSEDOWN, codes.MOUSE_RIGHT)
+    r.registerAction(triggerTypes.MOUSEUP, codes.MOUSE_MID, actionTypes.MOUSEUP, codes.MOUSE_RIGHT)
     r.start(".*")

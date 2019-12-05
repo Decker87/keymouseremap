@@ -83,9 +83,9 @@ def releaseKey(hexKeyCode):
 
 # mouse_event: https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260(v=vs.85).aspx
 mouseButtonCodes = {
-    'left':     {'down': 0x02, 'up': 0x04},
-    'right':    {'down': 0x08, 'up': 0x10},
-    'middle':   {'down': 0x20, 'up': 0x40},
+    codes.MOUSE_LEFT:   {'down': 0x02, 'up': 0x04},
+    codes.MOUSE_RIGHT:  {'down': 0x08, 'up': 0x10},
+    codes.MOUSE_MID:    {'down': 0x20, 'up': 0x40},
 }
 
 def pressMouseButton(button):

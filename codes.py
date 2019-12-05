@@ -1,15 +1,10 @@
 # See https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 # This is not comprehensive and only includes most keys on a standard keyboard, and mouse buttons
 
-# Mouse buttons
-VK_LBUTTON = 0x01
-VK_MOUSELEFT = VK_LBUTTON
-VK_RBUTTON = 0x02
-VK_MOUSERIGHT = VK_RBUTTON
-VK_MBUTTON = 0x04
-VK_MOUSEMID = VK_MBUTTON
-VK_XBUTTON1 = 0x05
-VK_XBUTTON2 = 0x06
+# Mouse buttons; not based on any established codes. Just used like enum.
+MOUSE_LEFT = 0
+MOUSE_RIGHT = 1
+MOUSE_MID = 2
 
 # Common keys and aliases
 VK_BACK = 0x08

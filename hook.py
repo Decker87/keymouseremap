@@ -1,5 +1,6 @@
 import pythoncom, pyHook
 import Queue, threading, re
+import codes
 
 # KEYBOARD EVENT LIKE
 # e.Alt: 0
@@ -49,12 +50,12 @@ def getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueu
     keysDown = set()
 
     mouseMessageNameToButton = {
-        'mouse left down': 'left',
-        'mouse left up': 'left',
-        'mouse right down': 'right',
-        'mouse right up': 'right',
-        'mouse middle down': 'middle',
-        'mouse middle up': 'middle',
+        'mouse left down': codes.MOUSE_LEFT,
+        'mouse left up': codes.MOUSE_LEFT,
+        'mouse right down': codes.MOUSE_RIGHT,
+        'mouse right up': codes.MOUSE_RIGHT,
+        'mouse middle down': codes.MOUSE_MID,
+        'mouse middle up': codes.MOUSE_MID,
     }
 
     def closedEventHandler(e):
