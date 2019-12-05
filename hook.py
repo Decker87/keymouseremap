@@ -17,6 +17,16 @@ import Queue, threading, re
 # e.WindowName: 'MINGW64:/d/Users/Adam/programming/keymouseremap'
 # e.flags: 1
 
+# MOUSE EVENT LIKE
+# e.Injected: 0
+# e.Message: 516
+# e.MessageName: 'mouse right down'
+# e.Position: (768, 694)
+# e.Time: -1219646062
+# e.Wheel: 0
+# e.Window: 3932860
+# e.WindowName: 'MINGW64:/d/Users/Adam/programming/keymouseremap'
+
 def debugPrintEvent(e):
     print("=" * 40)
     for attr in dir(e):
@@ -27,7 +37,7 @@ def debugPrintEvent(e):
             print("e.%s: %s" % (attr, e.__getattribute__(attr).__repr__()))
     print("=" * 40)
 
-def getClosedEventHandler(windowRegexCompiled, keyCodes, eventQueue):
+def getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueue):
     '''Returns an event handler with key information closed (as in closure).'''
     # Note: Anything that is material in deciding whether an event should be passed through or blocked MUST
     #   be dealt with in the event handler, since the handler needs to return a bool that tells pyHook
@@ -38,24 +48,38 @@ def getClosedEventHandler(windowRegexCompiled, keyCodes, eventQueue):
     # it should do this, but I could not get it to do so.
     keysDown = set()
 
+    mouseMessageNameToButton = {
+        'mouse left down': 'left',
+        'mouse left up': 'left',
+        'mouse right down': 'right',
+        'mouse right up': 'right',
+        'mouse middle down': 'middle',
+        'mouse middle up': 'middle',
+    }
+
     def closedEventHandler(e):
         # If it's the wrong window, do nothing
         if not windowRegexCompiled.match(e.WindowName):
             return True
 
-        # If it's not in our key codes, do nothing
-        if e.KeyID not in keyCodes:
-            return True
+        if 'key' in e.MessageName:
+            if e.KeyID not in keyCodes:
+                return True
 
-        # If it's a key down event but it's already down, ignore it.
-        if e.MessageName == 'key down' and e.KeyID in keysDown:
-            return True
-        
-        # Manage keysDown state
-        if e.MessageName == 'key down':
-            keysDown.add(e.KeyID)
-        elif e.MessageName == 'key up':
-            keysDown.discard(e.KeyID)
+            # If it's a key down event but it's already down, ignore it.
+            if e.MessageName == 'key down' and e.KeyID in keysDown:
+                return True
+            
+            # Manage keysDown state
+            if e.MessageName == 'key down':
+                keysDown.add(e.KeyID)
+            elif e.MessageName == 'key up':
+                keysDown.discard(e.KeyID)
+
+        elif 'mouse' in e.MessageName:
+            mouseButton = mouseMessageNameToButton[e.MessageName]
+            if mouseButton not in mouseButtons:
+                return True
 
         # Take action!
         eventQueue.put(e, block=False)
@@ -70,6 +94,8 @@ def hookInBackground(eventHandler):
         hm = pyHook.HookManager()
         hm.KeyAll = eventHandler
         hm.HookKeyboard()
+        hm.MouseAllButtons = eventHandler
+        hm.HookMouse()
         pythoncom.PumpMessages()
 
     pumpingThread = threading.Thread(target=hookAndPumpInSingleThread)
@@ -77,18 +103,18 @@ def hookInBackground(eventHandler):
     pumpingThread.start()
 
 # API functions
-def getEventQueueWithHookedEvents(windowRegexStr, keyCodes = []):
+def getEventQueueWithHookedEvents(windowRegexStr, keyCodes = [], mouseButtons = []):
     '''Returns a queue object that will get raw key events.'''
     eventQueue = Queue.Queue()
     windowRegexCompiled = re.compile(windowRegexStr)
-    closedEventHandler = getClosedEventHandler(windowRegexCompiled, keyCodes, eventQueue)
+    closedEventHandler = getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueue)
     hookInBackground(closedEventHandler)
     return eventQueue
 
 def test():
     '''Does a quick test of this file, debug prints events for G and H keys.'''
     import codes
-    eventQueue = getEventQueueWithHookedEvents(".*", [codes.VK_G, codes.VK_H])
+    eventQueue = getEventQueueWithHookedEvents(".*", keyCodes=[codes.VK_G, codes.VK_H], mouseButtons=['right'])
 
     while True:
         e = eventQueue.get(block=True)
