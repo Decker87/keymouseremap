@@ -14,6 +14,7 @@ class actionTypes:
     KEYUP = 1
     MOUSEDOWN = 2
     MOUSEUP = 3
+    CALLFUNCTION = 4
 
 class Remapper:
     '''A useful thing that can remap some keys.'''
@@ -38,6 +39,8 @@ class Remapper:
             pressMouseButton(actionSpec)
         elif actionType == actionTypes.MOUSEUP:
             releaseMouseButton(actionSpec)
+        elif actionType == actionTypes.CALLFUNCTION:
+            actionSpec()
 
     def _getKeyCodesAndMouseButtons(self):
         '''Uses the current action registry to determine which mouse buttons and key codes need to be hooked.'''
@@ -87,4 +90,11 @@ if __name__ == "__main__":
     r.registerAction(triggerTypes.KEYUP, codes.VK_W, actionTypes.KEYUP, codes.VK_Y)
     r.registerAction(triggerTypes.MOUSEDOWN, codes.MOUSE_MID, actionTypes.MOUSEDOWN, codes.MOUSE_RIGHT)
     r.registerAction(triggerTypes.MOUSEUP, codes.MOUSE_MID, actionTypes.MOUSEUP, codes.MOUSE_RIGHT)
+
+    # Print something when the G key is released
+    catName = "Shadowbutt"
+    def printCatName():
+        print(catName)
+    r.registerAction(triggerTypes.KEYUP, codes.VK_G, actionTypes.CALLFUNCTION, printCatName)
+
     r.start(".*")
