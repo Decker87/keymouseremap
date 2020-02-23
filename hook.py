@@ -1,6 +1,6 @@
-import pythoncom, pyHook
-import Queue, threading, re
-import codes
+import pythoncom, pyWinhook
+import queue, threading, re, time
+from . import codes
 
 # KEYBOARD EVENT LIKE
 # e.Alt: 0
@@ -92,7 +92,7 @@ def hookInBackground(eventHandler):
     '''Run the message pump in the background while hooking events with the given event handler.'''
     def hookAndPumpInSingleThread():
         # These things all must happen on the same thread, so must be part of the same function
-        hm = pyHook.HookManager()
+        hm = pyWinhook.HookManager()
         hm.KeyAll = eventHandler
         hm.HookKeyboard()
         hm.MouseAllButtons = eventHandler
@@ -106,7 +106,7 @@ def hookInBackground(eventHandler):
 # API functions
 def getEventQueueWithHookedEvents(windowRegexStr, keyCodes = [], mouseButtons = []):
     '''Returns a queue object that will get raw key events.'''
-    eventQueue = Queue.Queue()
+    eventQueue = queue.Queue()
     windowRegexCompiled = re.compile(windowRegexStr)
     closedEventHandler = getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueue)
     hookInBackground(closedEventHandler)

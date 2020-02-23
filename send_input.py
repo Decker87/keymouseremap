@@ -1,7 +1,7 @@
 import ctypes
 from ctypes import wintypes
 import time
-import codes
+from . import codes
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
 

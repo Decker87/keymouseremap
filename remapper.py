@@ -1,7 +1,8 @@
 from collections import defaultdict
-from hook import getEventQueueWithHookedEvents, debugPrintEvent
-from send_input import pressKey, releaseKey, pressMouseButton, releaseMouseButton
-import codes
+from . import hook
+from .hook import getEventQueueWithHookedEvents, debugPrintEvent
+from .send_input import pressKey, releaseKey, pressMouseButton, releaseMouseButton
+from . import codes
 
 # Used like enums
 class triggerTypes:
