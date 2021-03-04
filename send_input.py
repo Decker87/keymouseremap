@@ -59,6 +59,9 @@ class INPUT(ctypes.Structure):
 
 LPINPUT = ctypes.POINTER(INPUT)
 
+class POINT(ctypes.Structure):
+    _fields_ = [("x", ctypes.c_ulong), ("y", ctypes.c_ulong)]
+
 def _check_count(result, func, args):
     if result == 0:
         raise ctypes.WinError(ctypes.get_last_error())
@@ -93,3 +96,12 @@ def pressMouseButton(button):
 
 def releaseMouseButton(button):
     user32.mouse_event(mouseButtonCodes[button]['up'], 0, 0, 0, 0)
+
+def getCursorPosition():
+    pt = POINT()
+    user32.GetCursorPos(ctypes.byref(pt))
+    return (pt.x, pt.y)
+
+def setCursorPosition(pos):
+    x, y = pos
+    user32.SetCursorPos(x, y)

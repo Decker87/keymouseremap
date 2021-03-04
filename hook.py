@@ -60,7 +60,8 @@ def getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueu
 
     def closedEventHandler(e):
         # If it's the wrong window, do nothing
-        if not windowRegexCompiled.match(e.WindowName):
+        if not e.WindowName or not windowRegexCompiled.match(e.WindowName):
+            #print("Window name: %s" % e.WindowName.__str__())
             return True
 
         if 'key' in e.MessageName:

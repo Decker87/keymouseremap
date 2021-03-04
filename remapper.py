@@ -71,6 +71,9 @@ class Remapper:
         if e.MessageName == 'mouse middle up':
             return triggerTypes.MOUSEUP, codes.MOUSE_MID
 
+        # Else return None
+        return None
+
     def start(self, windowRegexStr):
         keyCodes, mouseButtons = self._getKeyCodesAndMouseButtons()
 
@@ -80,9 +83,11 @@ class Remapper:
             e = eventQueue.get(block=True)
 
             # Process all actions associated with this trigger
-            triggerType, triggerSpec = self._getTriggerTypeAndSpec(e)
-            for (actionType, actionSpec) in self.actionRegistry[(triggerType, triggerSpec)]:
-                self._performAction(actionType, actionSpec)
+            r = self._getTriggerTypeAndSpec(e)
+            if r:
+                triggerType, triggerSpec = r
+                for (actionType, actionSpec) in self.actionRegistry[(triggerType, triggerSpec)]:
+                    self._performAction(actionType, actionSpec)
 
 if __name__ == "__main__":
     # Test: Map the W key to Y, and middle button to right button
