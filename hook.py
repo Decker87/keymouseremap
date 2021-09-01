@@ -61,21 +61,22 @@ def getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueu
     def closedEventHandler(e):
         # If it's the wrong window, do nothing
         if not e.WindowName or not windowRegexCompiled.match(e.WindowName):
-            #print("Window name: %s" % e.WindowName.__str__())
+            #print("Window name: %s" % e.WindowName.__str__()) # For debug
             return True
 
         if 'key' in e.MessageName:
+            #print("e.KeyID: %s, e.MessageName: %s" % (str(e.KeyID), e.MessageName)) # For debug
             if e.KeyID not in keyCodes:
                 return True
 
             # If it's a key down event but it's already down, ignore it.
-            if e.MessageName == 'key down' and e.KeyID in keysDown:
+            if e.MessageName in ['key down', 'key sys down'] and e.KeyID in keysDown:
                 return True
             
             # Manage keysDown state
-            if e.MessageName == 'key down':
+            if e.MessageName in ['key down', 'key sys down']:
                 keysDown.add(e.KeyID)
-            elif e.MessageName == 'key up':
+            elif e.MessageName in ['key up', 'key sys up']:
                 keysDown.discard(e.KeyID)
 
         elif 'mouse' in e.MessageName:

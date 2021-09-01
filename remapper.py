@@ -1,7 +1,7 @@
 from collections import defaultdict
 from . import hook
 from .hook import getEventQueueWithHookedEvents, debugPrintEvent
-from .send_input import pressKey, releaseKey, pressMouseButton, releaseMouseButton
+from .send_input import pressKey, releaseKey, pressMouseButton, releaseMouseButton, pressKeyIndirect, releaseKeyIndirect
 from . import codes
 
 # Used like enums
@@ -33,8 +33,10 @@ class Remapper:
 
     def _performAction(self, actionType, actionSpec):
         if actionType == actionTypes.KEYDOWN:
+            #pressKeyIndirect(actionSpec)
             pressKey(actionSpec)
         elif actionType == actionTypes.KEYUP:
+            #releaseKeyIndirect(actionSpec)
             releaseKey(actionSpec)
         elif actionType == actionTypes.MOUSEDOWN:
             pressMouseButton(actionSpec)
@@ -54,9 +56,9 @@ class Remapper:
         return keyCodes, mouseButtons
     
     def _getTriggerTypeAndSpec(self, e):
-        if e.MessageName == 'key down':
+        if e.MessageName in ['key down', 'key sys down']:
             return triggerTypes.KEYDOWN, e.KeyID
-        if e.MessageName == 'key up':
+        if e.MessageName in ['key up', 'key sys up']:
             return triggerTypes.KEYUP, e.KeyID
         if e.MessageName == 'mouse left down':
             return triggerTypes.MOUSEDOWN, codes.MOUSE_LEFT
