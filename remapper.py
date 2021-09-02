@@ -32,7 +32,10 @@ class Remapper:
 
     def registerAction(self, triggerType, triggerSpec, actionType, actionSpec):
         self.actionRegistry[(triggerType, triggerSpec)].append((actionType, actionSpec))
-        pass
+
+    def registerSimpleKeyMap(self, srcKey, dstKey):
+        self.registerAction(triggerTypes.KEYDOWN, srcKey, actionTypes.KEYDOWN, dstKey)
+        self.registerAction(triggerTypes.KEYUP, srcKey, actionTypes.KEYUP, dstKey)
 
     def _performAction(self, actionType, actionSpec):
         if actionType == actionTypes.KEYDOWN:
@@ -52,7 +55,7 @@ class Remapper:
 
     def _getKeyCodesAndMouseButtons(self):
         '''Uses the current action registry to determine which mouse buttons and key codes need to be hooked.'''
-        keyCodes = [triggerSpec for (triggerType, triggerSpec) in self.actionRegistry.keys() if triggerType == triggerTypes.KEYDOWN or triggerType == triggerTypes.KEYUP]
+        keyCodes = [triggerSpec for (triggerType, triggerSpec) in self.actionRegistry.keys() if triggerType in [triggerTypes.KEYDOWN, triggerTypes.KEYDOWN_REPEAT, triggerTypes.KEYUP]]
         keyCodes = list(set(keyCodes))
 
         mouseButtons = [triggerSpec for (triggerType, triggerSpec) in self.actionRegistry.keys() if triggerType == triggerTypes.MOUSEDOWN or triggerType == triggerTypes.MOUSEUP]
@@ -106,6 +109,12 @@ if __name__ == "__main__":
     r.registerAction(triggerTypes.KEYUP, codes.VK_W, actionTypes.KEYUP, codes.VK_Y)
     r.registerAction(triggerTypes.MOUSEDOWN, codes.MOUSE_MID, actionTypes.MOUSEDOWN, codes.MOUSE_RIGHT)
     r.registerAction(triggerTypes.MOUSEUP, codes.MOUSE_MID, actionTypes.MOUSEUP, codes.MOUSE_RIGHT)
+
+    # When R is held, repeats press T down
+    r.registerAction(triggerTypes.KEYDOWN_REPEAT, codes.VK_R, actionTypes.KEYDOWN, codes.VK_T)
+
+    # Scroll lock = exit
+    r.registerAction(triggerTypes.KEYUP, codes.VK_SCROLL, actionTypes.CALLFUNCTION, exit)
 
     # Print something when the G key is released
     catName = "Shadowbutt"
