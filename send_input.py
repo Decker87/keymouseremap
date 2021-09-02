@@ -75,14 +75,14 @@ user32.SendInput.argtypes = (wintypes.UINT, # nInputs
 # Functions
 def pressKey(hexKeyCode):
     x = INPUT(type=INPUT_KEYBOARD, ki=KEYBDINPUT(wVk=hexKeyCode, dwFlags=KEYEVENTF_SCANCODE))
-    k = (1, ctypes.byref(x), ctypes.sizeof(x))
-    print("SendInput args: %s" % (x.__str__()))
+    # k = (1, ctypes.byref(x), ctypes.sizeof(x))
+    # print("SendInput args: %s" % (x.__str__()))
     user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
 
 def releaseKey(hexKeyCode):
     x = INPUT(type=INPUT_KEYBOARD, ki=KEYBDINPUT(wVk=hexKeyCode, dwFlags=KEYEVENTF_KEYUP+KEYEVENTF_SCANCODE))
-    k = (1, ctypes.byref(x), ctypes.sizeof(x))
-    print("SendInput args: %s" % (x.__str__()))
+    # k = (1, ctypes.byref(x), ctypes.sizeof(x))
+    # print("SendInput args: %s" % (x.__str__()))
     user32.SendInput(1, ctypes.byref(x), ctypes.sizeof(x))
 
 # mouse_event: https://msdn.microsoft.com/en-us/library/windows/desktop/ms646260(v=vs.85).aspx
