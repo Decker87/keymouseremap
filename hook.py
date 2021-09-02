@@ -69,10 +69,11 @@ def getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueu
             if e.KeyID not in keyCodes:
                 return True
 
-            # If it's a key down event but it's already down, ignore it.
-            if e.MessageName in ['key down', 'key sys down'] and e.KeyID in keysDown:
-                return True
-            
+            # If it's a key down event but it's already down, mark it as a repeat.
+            # TODO - Store this somewhere other than the event. It's a bit hacky to have the event have added data.
+            if e.MessageName in ['key down', 'key sys down']:
+                e.Repeated = e.KeyID in keysDown
+
             # Manage keysDown state
             if e.MessageName in ['key down', 'key sys down']:
                 keysDown.add(e.KeyID)

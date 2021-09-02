@@ -7,15 +7,18 @@ from . import codes
 # Used like enums
 class triggerTypes:
     KEYDOWN = 0
-    KEYUP = 1
-    MOUSEDOWN = 2
-    MOUSEUP = 3
+    KEYDOWN_REPEAT = 1
+    KEYUP = 2
+    MOUSEDOWN = 3
+    MOUSEUP = 4
 class actionTypes:
     KEYDOWN = 0
     KEYUP = 1
-    MOUSEDOWN = 2
-    MOUSEUP = 3
-    CALLFUNCTION = 4
+    KEYDOWN_INDIRECT = 2
+    KEYUP_INDIRECT = 3
+    MOUSEDOWN = 4
+    MOUSEUP = 5
+    CALLFUNCTION = 6
 
 class Remapper:
     '''A useful thing that can remap some keys.'''
@@ -33,11 +36,13 @@ class Remapper:
 
     def _performAction(self, actionType, actionSpec):
         if actionType == actionTypes.KEYDOWN:
-            #pressKeyIndirect(actionSpec)
             pressKey(actionSpec)
         elif actionType == actionTypes.KEYUP:
-            #releaseKeyIndirect(actionSpec)
             releaseKey(actionSpec)
+        elif actionType == actionTypes.KEYDOWN_INDIRECT:
+            pressKeyIndirect(actionSpec)
+        elif actionType == actionTypes.KEYUP_INDIRECT:
+            releaseKeyIndirect(actionSpec)
         elif actionType == actionTypes.MOUSEDOWN:
             pressMouseButton(actionSpec)
         elif actionType == actionTypes.MOUSEUP:
@@ -57,7 +62,10 @@ class Remapper:
     
     def _getTriggerTypeAndSpec(self, e):
         if e.MessageName in ['key down', 'key sys down']:
-            return triggerTypes.KEYDOWN, e.KeyID
+            if e.Repeated == True:
+                return triggerTypes.KEYDOWN_REPEAT, e.KeyID
+            else:
+                return triggerTypes.KEYDOWN, e.KeyID
         if e.MessageName in ['key up', 'key sys up']:
             return triggerTypes.KEYUP, e.KeyID
         if e.MessageName == 'mouse left down':
