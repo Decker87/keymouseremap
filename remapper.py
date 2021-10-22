@@ -29,6 +29,7 @@ class Remapper:
     def __init__(self):
         # Registry looks like: registry[(triggertype, triggerspec)] = [(actionType, actionSpec)]
         self.actionRegistry = defaultdict(list)
+        self.pauseKey = None
 
     def registerAction(self, triggerType, triggerSpec, actionType, actionSpec):
         self.actionRegistry[(triggerType, triggerSpec)].append((actionType, actionSpec))
@@ -36,6 +37,9 @@ class Remapper:
     def registerSimpleKeyMap(self, srcKey, dstKey):
         self.registerAction(triggerTypes.KEYDOWN, srcKey, actionTypes.KEYDOWN, dstKey)
         self.registerAction(triggerTypes.KEYUP, srcKey, actionTypes.KEYUP, dstKey)
+    
+    def registerPauseKey(self, pauseKey):
+        self.pauseKey = pauseKey
 
     def _performAction(self, actionType, actionSpec):
         if actionType == actionTypes.KEYDOWN:
@@ -91,7 +95,7 @@ class Remapper:
         keyCodes, mouseButtons = self._getKeyCodesAndMouseButtons()
 
         # Do the remapping!
-        eventQueue = getEventQueueWithHookedEvents(windowRegexStr, keyCodes=keyCodes, mouseButtons=mouseButtons)
+        eventQueue = getEventQueueWithHookedEvents(windowRegexStr, keyCodes=keyCodes, mouseButtons=mouseButtons, pauseKey=self.pauseKey)
         while True:
             e = eventQueue.get(block=True)
 

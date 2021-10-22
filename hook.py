@@ -28,6 +28,13 @@ from . import codes
 # e.Window: 3932860
 # e.WindowName: 'MINGW64:/d/Users/Adam/programming/keymouseremap'
 
+# TODO: Figure out a better way of doing this, other than a module-global variable
+isPaused = False
+
+def togglePause():
+    global isPaused
+    isPaused = not isPaused
+
 def debugPrintEvent(e):
     print("=" * 40)
     for attr in dir(e):
@@ -38,7 +45,7 @@ def debugPrintEvent(e):
             print("e.%s: %s" % (attr, e.__getattribute__(attr).__repr__()))
     print("=" * 40)
 
-def getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueue):
+def getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, pauseKey, eventQueue):
     '''Returns an event handler with key information closed (as in closure).'''
     # Note: Anything that is material in deciding whether an event should be passed through or blocked MUST
     #   be dealt with in the event handler, since the handler needs to return a bool that tells pyHook
@@ -62,6 +69,14 @@ def getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueu
         # If it's the wrong window, do nothing
         if not e.WindowName or not windowRegexCompiled.match(e.WindowName):
             #print("Window name: %s" % e.WindowName.__str__()) # For debug
+            return True
+
+        # Figure out if we're just pausing or unpausing
+        if pauseKey and e.MessageName in ['key up', 'key sys up'] and e.KeyID == pauseKey:
+            togglePause()
+            return False
+
+        if isPaused:
             return True
 
         if 'key' in e.MessageName:
@@ -107,11 +122,11 @@ def hookInBackground(eventHandler):
     pumpingThread.start()
 
 # API functions
-def getEventQueueWithHookedEvents(windowRegexStr, keyCodes = [], mouseButtons = []):
+def getEventQueueWithHookedEvents(windowRegexStr, keyCodes = [], mouseButtons = [], pauseKey = None):
     '''Returns a queue object that will get raw key events.'''
     eventQueue = queue.Queue()
     windowRegexCompiled = re.compile(windowRegexStr)
-    closedEventHandler = getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, eventQueue)
+    closedEventHandler = getClosedEventHandler(windowRegexCompiled, keyCodes, mouseButtons, pauseKey, eventQueue)
     hookInBackground(closedEventHandler)
     return eventQueue
 
